@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Streamlit
+.streamlit/
+
+# Hugging Face cache
+.cache/
+huggingface/
+
+# VS Code
+.vscode/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Model files
+*.bin
+*.safetensors
+
+# Logs
+*.log

@@ -5,13 +5,12 @@ from models.ner import NERExtractor
 from models.question_answering import QuestionAnswering
 
 st.title("NLP App")
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "Sentiment",
     "Summarizer",
     "NER",
     "Question Answering",
     "POS Tagging",
-    "Spell Checker",
 ])
 
 with tab1:
@@ -29,15 +28,13 @@ with tab3:
 
     ner_btn = st.button("Get NER",key="ner_btn")
 with tab4:
-    question = st.text_input("Enter Question")
     context = st.text_area("Enter Context")
+    question = st.text_input("Enter Question")
 
     qa_btn = st.button("Answer",key="qa")
 
 with tab5: 
     from utils.pos_tagger import POSTagger
-
-with tab5:
 
     pos_text = st.text_area("Enter text")
 
@@ -94,13 +91,20 @@ if sentiment_btn and sentiment_text:
 
 if summary_btn and summary_text:
     summary_model = Summarizer()
+    summary_text = "summarize: " + summary_text
     result = summary_model.summarize(summary_text)
-    st.write(result)
+    st.subheader("Summary")
+    st.write(result[0]["summary_text"])
 
 if ner_btn and ner_text:
     ner_model = NERExtractor()
     result = ner_model.predict(ner_text)
-    st.write(result)
+    for item in result:
+      st.info(
+        f"Entity: {item['Entity']}\n\n"
+        f"Type: {item['Type']}\n\n"
+        f"Confidence: {item['Confidence']:.3f}"
+      )
 
 if qa_btn and question and context:
     qa_model = QuestionAnswering()

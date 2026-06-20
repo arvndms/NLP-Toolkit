@@ -34,7 +34,7 @@ class ModelLoader:
                 "ner",
                 model=NER_MODEL,
                 device=DEVICE,
-                aggregation_strategy="simple"
+                aggregation_strategy="first"
 
             )
         return ModelLoader._ner
@@ -42,9 +42,10 @@ class ModelLoader:
     @staticmethod
     def get_qa():
         if ModelLoader._qa is None:
-            ModelLoader._ner = pipeline(
+            ModelLoader._qa = pipeline(
                 "question-answering",
                 model=QA_MODEL,
                 device=DEVICE
                
            )
+        return ModelLoader._qa
