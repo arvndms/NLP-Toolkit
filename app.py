@@ -13,6 +13,18 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "POS Tagging",
 ])
 
+with st.sidebar:
+    st.header("NLP Toolkit")
+
+    st.write("""
+    Features:
+    - Sentiment Analysis
+    - Summarization
+    - NER
+    - Question Answering
+    - POS Tagging
+    """)
+
 with tab1:
     sentiment_text = st.text_area("Enter text",key="sentiment_text")
 
@@ -52,49 +64,45 @@ with tab5:
             )
 
 if sentiment_btn and sentiment_text:
-    sentiment_model = SentimentAnalyzer()
-    result = sentiment_model.predict(sentiment_text)
+    with st.spinner("Analyzing..."):
+            try:
+                    sentiment_model = SentimentAnalyzer() 
+                    result = sentiment_model.predict(sentiment_text)
 
-    # Overall sentiment
-    st.subheader("Overall Sentiment")
+                    # Overall sentiment
+                    st.subheader("Overall Sentiment")
 
-    overall = result["overall"]
+                    overall = result["overall"]
 
-    st.success(
-        f"{overall['label']} ({overall['score']:.3f})"
-    )
+                    st.success(
+                        f"{overall['label']} ({overall['score']:.3f})"
+                    )
 
-    # Sentence-wise analysis
-    st.subheader("Sentence-wise Analysis")
-
-    for i, sentence_result in enumerate(result["sentence_wise"], 1):
-
-        sentiment = sentence_result["Sentiment"]
-
-        if sentiment == "POSITIVE":
-            st.success(
-                f"{i}. {sentence_result['Sentence']}\n\n"
-                f"Sentiment: {sentiment} ({sentence_result['Score']:.3f})"
-            )
-
-        elif sentiment == "NEGATIVE":
-            st.error(
-                f"{i}. {sentence_result['Sentence']}\n\n"
-                f"Sentiment: {sentiment} ({sentence_result['Score']:.3f})"
-            )
-
-        else:
-            st.info(
-                f"{i}. {sentence_result['Sentence']}\n\n"
-                f"Sentiment: {sentiment} ({sentence_result['Score']:.3f})"
-            )
+                    # Sentence-wise analysis
+                    st.subheader("Sentence-wise Analysis")
+                    with st.expander("Sentence-wise Analysis"):
+                        for i, sentence_result in enumerate(result["sentence_wise"], 1):
+                            
+                            st.markdown("---")
+                            st.markdown(f"### {sentence_result['Sentiment']}")
+                            st.write(sentence_result['Sentence'])
+                            st.caption(f"Confidence: {sentence_result['Score']:.3f}")
+                                
+            except RuntimeError :
+                        st.write("Sentence Too Long!")
+    st.success("Done!")
 
 if summary_btn and summary_text:
-    summary_model = Summarizer()
-    summary_text = "summarize: " + summary_text
-    result = summary_model.summarize(summary_text)
-    st.subheader("Summary")
-    st.write(result[0]["summary_text"])
+    with st.spinner("Summarizing..."):
+            summary_model = Summarizer()
+            summary_text = "summarize: " + summary_text
+            result = summary_model.summarize(summary_text)
+            st.text_area(
+            "Summary",
+            result[0]["summary_text"],
+            height=200
+            )
+    st.success("Done!")
 
 if ner_btn and ner_text:
     ner_model = NERExtractor()
@@ -107,7 +115,14 @@ if ner_btn and ner_text:
       )
 
 if qa_btn and question and context:
-    qa_model = QuestionAnswering()
-    result = qa_model.predict(question,context)
-    st.success(result['answer'])
-    st.write(f"Confidence: {result['score']:.3f}")
+    with st.spinner("Studying..."):
+        qa_model = QuestionAnswering()
+        result = qa_model.predict(question,context)
+        st.subheader("Answer")
+
+        st.success(result["answer"])
+
+        st.write(
+        f"Confidence: {result['score']:.3f}"
+        )
+    st.success("Done!")
