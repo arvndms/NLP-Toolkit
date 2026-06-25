@@ -1,10 +1,14 @@
-from models.model_loader import ModelLoader
+from backend.models.model_loader import ModelLoader
+import logging
+
+logger = logging.getLogger(__name__)
 
 class NERExtractor:
     def __init__(self):
         self.pipeline = ModelLoader.get_ner()
 
     def predict(self, text):
+        logger.info("NER Model Running")
         raw = self.pipeline(text)
 
         entities = []

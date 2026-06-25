@@ -1,6 +1,9 @@
-from models.model_loader import ModelLoader
+from backend.models.model_loader import ModelLoader
 from nltk.tokenize import sent_tokenize
 import nltk
+import logging
+
+logger = logging.getLogger(__name__)
 
 nltk.download("punkt")
 nltk.download("punkt_tab")
@@ -12,6 +15,7 @@ class SentimentAnalyzer:
         self.pipeline=ModelLoader.get_sentiment()
 
     def predict(self,text):
+        logger.info("Running sentiment model")
         overall =  self.pipeline(text)[0]
         sentences = sent_tokenize(text)
 

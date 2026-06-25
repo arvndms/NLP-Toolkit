@@ -1,8 +1,9 @@
 import streamlit as st
-from models.sentiment import SentimentAnalyzer
-from models.summarizer import Summarizer
-from models.ner import NERExtractor
-from models.question_answering import QuestionAnswering
+from backend.models.sentiment import SentimentAnalyzer
+from backend.models.summarizer import Summarizer
+from backend.models.ner import NERExtractor
+from backend.models.question_answering import QuestionAnswering
+import requests
 
 st.title("NLP App")
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
@@ -46,7 +47,7 @@ with tab4:
     qa_btn = st.button("Answer",key="qa")
 
 with tab5: 
-    from utils.pos_tagger import POSTagger
+    from backend.utils.pos_tagger import POSTagger
 
     pos_text = st.text_area("Enter text")
 
@@ -67,7 +68,11 @@ if sentiment_btn and sentiment_text:
     with st.spinner("Analyzing..."):
             try:
                     sentiment_model = SentimentAnalyzer() 
-                    result = sentiment_model.predict(sentiment_text)
+                    response = requests.post(
+                        "http://127.0.0.1:8000/sentiment",
+                        json={"text": sentiment_text}
+                                        )
+                    result = response.json()
 
                     # Overall sentiment
                     st.subheader("Overall Sentiment")
@@ -95,8 +100,12 @@ if sentiment_btn and sentiment_text:
 if summary_btn and summary_text:
     with st.spinner("Summarizing..."):
             summary_model = Summarizer()
-            summary_text = "summarize: " + summary_text
-            result = summary_model.summarize(summary_text)
+            summary_text = "summarize the following : " + summary_text
+            response = requests.post(
+                        "http://127.0.0.1:8000/summary",
+                        json={"text": summary_text}
+                                        )
+            result = response.json()
             st.text_area(
             "Summary",
             result[0]["summary_text"],
@@ -106,7 +115,11 @@ if summary_btn and summary_text:
 
 if ner_btn and ner_text:
     ner_model = NERExtractor()
-    result = ner_model.predict(ner_text)
+    response = requests.post(
+                        "http://127.0.0.1:8000/NER",
+                        json={"text": ner_text}
+                                        )
+    result = response.json()
     for item in result:
       st.info(
         f"Entity: {item['Entity']}\n\n"
@@ -117,7 +130,12 @@ if ner_btn and ner_text:
 if qa_btn and question and context:
     with st.spinner("Studying..."):
         qa_model = QuestionAnswering()
-        result = qa_model.predict(question,context)
+        response = requests.post(
+                        "http://127.0.0.1:8000/QuestionAnswer",
+                        json={"question": question,
+                              "context":context}
+                                        )
+        result = response.json()
         st.subheader("Answer")
 
         st.success(result["answer"])

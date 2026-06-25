@@ -1,5 +1,8 @@
 from transformers import pipeline 
-from config import SENTIMENT_MODEL, SUMMARY_MODEL,NER_MODEL,QA_MODEL, DEVICE
+from backend.config import SENTIMENT_MODEL, SUMMARY_MODEL,NER_MODEL,QA_MODEL, DEVICE
+import logging 
+
+logger = logging.getLogger(__name__)
 
 class ModelLoader:
     _sentiment = None
@@ -10,6 +13,7 @@ class ModelLoader:
     @staticmethod
     def get_sentiment():
         if ModelLoader._sentiment is None:
+            logger.info("Loading sentiment model")
             ModelLoader._sentiment = pipeline(
                 "sentiment-analysis",
                 model=SENTIMENT_MODEL,
@@ -20,6 +24,7 @@ class ModelLoader:
     @staticmethod
     def get_summary():
         if ModelLoader._summary is None:
+            logger.info("Loading Summarizer")
             ModelLoader._summary = pipeline(
                 "summarization",
                 model=SUMMARY_MODEL,
@@ -29,6 +34,7 @@ class ModelLoader:
 
     @staticmethod
     def get_ner():
+        logger.info("NER Model Loaded")
         if ModelLoader._ner is None:
             ModelLoader._ner = pipeline(
                 "ner",
@@ -41,6 +47,7 @@ class ModelLoader:
     
     @staticmethod
     def get_qa():
+        logger.info("QA Model Loaded")
         if ModelLoader._qa is None:
             ModelLoader._qa = pipeline(
                 "question-answering",
