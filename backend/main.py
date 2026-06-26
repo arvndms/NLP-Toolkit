@@ -4,6 +4,7 @@ from backend.models.sentiment import SentimentAnalyzer
 from backend.models.summarizer import Summarizer
 from backend.models.question_answering import QuestionAnswering
 from backend.models.ner import NERExtractor
+from backend.utils.pos_tagger import POSTagger
 from backend.logger import logger
 
 app = FastAPI()
@@ -12,6 +13,7 @@ sentiment_model = SentimentAnalyzer()
 summarizer_model = Summarizer()
 qa_model = QuestionAnswering()
 ner_model = NERExtractor()
+pos_model = POSTagger()
 
 @app.post("/sentiment")
 def sentiment(req:TextRequest):
@@ -68,4 +70,17 @@ def NER(req:TextRequest):
             status_code=500,
             detail=str(e)
         )
-
+    
+@app.post("/POS")
+def POS(req:TextRequest):
+    try:
+        logger.info("POS request received")
+        result = pos_model.predict(req.text)
+        logger.info("POS Predicited")
+        return result
+    except Exception as e:
+        logger.error(f"Error{e}")
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
